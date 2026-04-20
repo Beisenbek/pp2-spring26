@@ -1,6 +1,7 @@
 import pygame
 
 from food import Food
+from wall import Wall
 from worm import Worm
 
 tile_width = 20
@@ -25,6 +26,7 @@ clock = pygame.time.Clock()
 
 worm = Worm(tile_width)
 food = Food(tile_width)
+wall = Wall(tile_width)
 
 while not done:
         # Event filtering
@@ -36,19 +38,22 @@ while not done:
                 filtered_events.append(event)
 
 
-        create_background(screen, 400, 300)
+        worm.process_input(filtered_events)
+        worm.move()
 
         pos = food.can_eat(worm.points[0])
         
         if(pos != None):
             worm.increase(pos)
             food = Food(tile_width)
-       
+            if len(worm.points) % 2 == 0:
+                wall.next_level()
+        
+        create_background(screen, 400, 300)
 
-        worm.process_input(filtered_events)
-        worm.move()
         worm.draw(screen)
         food.draw(screen)
-        
+        wall.draw(screen)
+
         pygame.display.flip()
         clock.tick(5)
